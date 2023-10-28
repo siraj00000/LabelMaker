@@ -30,20 +30,40 @@ const accountSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['Super Admin', 'Company Admin', 'Manufacturer Admin'],
-        default: 'Super Admin'
+        enum: ['Super Admin', 'Company Admin', 'Manufacturer Admin', 'User'],
+        default: 'User'
+    },
+    relatedWith: {
+        type: mongoose.Schema.Types.ObjectId,
     },
     isVerified: {
         type: Boolean,
         default: false
     },
-    verificationToken: String,
-    verificationTokenExpires: {
-        type: Date,
-        default: Date.now() + 3600000 // One hour from now
+    image: String,
+    city: String,
+    address: String,
+    country: String,
+    status: {
+        type: String,
+        enum: ['active', 'blocked', 'other_status'],
+        default: 'active'
     },
-    resetPasswordToken: String,
-    resetPasswordTokenExpires: Date
+    associatedId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: function () {
+            if (this.role === 'Company Admin') {
+                return 'Company';
+            }
+            else if (this.role === 'Manufacturer Admin') {
+                return 'Manufacturer';
+            }
+            // Add more cases if you have other roles
+            return undefined;
+        },
+        default: undefined
+    },
+    joining_date: Date,
 }, { timestamps: true });
 // Encrypt account password before saving to database
 accountSchema.pre('save', async function (next) {
@@ -61,7 +81,7 @@ accountSchema.methods.matchPassword = async function (password) {
 };
 // Generate JWT token for account
 accountSchema.methods.generateAuthToken = function () {
-    return jwt.sign({ id: this._id }, config.jwt.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
+    return jwt.sign({ id: this._id, role: this.role }, config.jwt.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
 };
 const Account = mongoose.model('Account', accountSchema);
 export default Account;

@@ -5,8 +5,23 @@ import cloudinary from 'cloudinary';
 import Logging from './library/Logging.mjs';
 import { config } from './config/config.js';
 import { errorHandler } from './middleware/error_handler.middleware.js';
-import { IAccount } from './models/admin/auth/accounts.model.js';
-import accountRouter from './routers/admin/auth/account.router.js';
+import { IAccount } from './models/accounts.model.js';
+import Path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+// Routers
+import accountRouters from './routers/account.router.js';
+import productRouters from './routers/products.router.js';
+import categoryRouter from './routers/category.router.js';
+import subcategoryRouters from './routers/subcategory.router.js';
+import manufacturerRouters from './routers/manufacturer.router.js';
+import companyRouters from './routers/company.router.js';
+import brandRouters from './routers/brand.router.js';
+import labelRouters from './routers/label.router.js';
+import combineRouter from './routers/combine.router.js';
 
 declare global {
     namespace Express {
@@ -67,7 +82,17 @@ const startServer = () => {
     });
 
     /* Routes */
-    router.use('/api/account', accountRouter);
+    router.use('/api/account', accountRouters);
+    router.use('/api/product', productRouters);
+    router.use('/api/category', categoryRouter);
+    router.use('/api/brand', brandRouters);
+    router.use('/api/subcategory', subcategoryRouters);
+    router.use('/api/company', companyRouters);
+    router.use('/api/manufacturer', manufacturerRouters);
+    router.use('/api/label', labelRouters);
+    router.use('/api/combine', combineRouter);
+    
+    router.use("/files", express.static('src/public/files'));
 
     /* Health Check */
     router.get('/ping', (req, res) => res.status(200).json({ message: 'pong' }));

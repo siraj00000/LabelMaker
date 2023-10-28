@@ -1,11 +1,37 @@
-import Account from '../models/admin/auth/accounts.model.js';
+import Account from '../models/accounts.model.js';
 import { ErrorResponse } from '../utils/error_response.utils.js';
 const authAdmin = async (req, res, next) => {
     try {
         const account = await Account.findOne({
             _id: req.account?.id
         });
-        if (account?.role !== 'admin')
+        if (account?.role !== 'Super Admin')
+            return next(new ErrorResponse(400, 'Admin resources are denied'));
+        next();
+    }
+    catch (error) {
+        next(error);
+    }
+};
+export const authCompanyAdmin = async (req, res, next) => {
+    try {
+        const account = await Account.findOne({
+            _id: req.account?.id
+        });
+        if (account?.role !== 'Company Admin')
+            return next(new ErrorResponse(400, 'Admin resources are denied'));
+        next();
+    }
+    catch (error) {
+        next(error);
+    }
+};
+export const authManufacturerAdmin = async (req, res, next) => {
+    try {
+        const account = await Account.findOne({
+            _id: req.account?.id
+        });
+        if (account?.role !== 'Manufacturer Admin')
             return next(new ErrorResponse(400, 'Admin resources are denied'));
         next();
     }

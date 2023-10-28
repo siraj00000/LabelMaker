@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import Account from '../models/admin/auth/accounts.model.js';
+import Account from '../models/accounts.model.js';
 const authMiddleware = async (req, res, next) => {
     try {
         const token = req.header('Authorization')?.replace('Bearer ', '');

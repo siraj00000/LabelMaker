@@ -1,0 +1,3 @@
+manufacture,brand,product,Variant,PlantName,BatchNumber,SerialNumber,TagNumber,TagActive,DS1,DS2,Status,OwnerMobile,CreatedAt
+Iphone Showroom karachi,iPhone 15,iPhone 15 Plus,ram,karachi industrial area,ABC-987,2,,false,DS1/iPhone 15_652c451b885db608eef32794_ABC-987_1,DS2/iPhone 15_652c451b885db608eef32794_ABC-987_1,show,-,2023-10-15T20:11:51.712Z
+Iphone Showroom karachi,iPhone 15,iPhone 15 Plus,ram,karachi industrial area,ABC-987,2,,false,DS1/iPhone 15_652c451b885db608eef32794_ABC-987_2,DS2/iPhone 15_652c451b885db608eef32794_ABC-987_2,show,-,2023-10-15T20:11:52.088Z

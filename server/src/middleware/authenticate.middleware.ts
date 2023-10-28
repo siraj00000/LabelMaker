@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import Account, { IAccount } from '../models/admin/auth/accounts.model.js';
+import Account, { IAccount } from '../models/accounts.model.js';
 
 interface AuthenticatedRequest extends Request {
     account: IAccount;

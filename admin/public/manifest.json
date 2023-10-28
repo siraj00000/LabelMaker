@@ -1,0 +1,20 @@
+{
+  "theme_color": "#f69435",
+  "background_color": "#f69435",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": ".",
+  "start_url": ".",
+  "id": ".",
+  "short_name": "Dashtar - Admin",
+  "name": "Dashtar - React eCommerce Admin Dashboard",
+  "description": "React Grocery & Organic Food Store e-commerce Admin Dashboard",
+  "icons": [
+    {
+      "src": "/Logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

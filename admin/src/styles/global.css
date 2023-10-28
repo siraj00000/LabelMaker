@@ -1,0 +1,45 @@
+/* SCROLL BAR */
+::-webkit-scrollbar {
+    width: .5em;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #2a35471c;
+    border-radius: 4pc;
+}
+
+/* SIDE BAR */
+.activeMenuAdditional{
+    @apply bg-primaryGreen text-lightSlate
+}
+.inactiveMenuAdditional{
+    @apply bg-white hover:bg-secondaryLightBlue hover:text-primaryGreen hover:scale-105 text-primaryDarkGray
+}
+.sidebarMenuItem {
+    @apply rounded-md border-none py-3 px-3 flex items-center gap-4 text-sm font-medium
+}
+
+/* Language Convertor Button Styling */
+.ReactFlagsSelect-module_selectBtn__19wW7{
+    @apply border-none after:border-none p-0 hover:scale-125;
+}
+
+.ReactFlagsSelect-module_selectOptions__3LNBJ{
+    @apply border-none !w-[80px] drop-shadow-md;
+}
+
+.ReactFlagsSelect-module_selectBtn__19wW7[aria-expanded="true"]:after{
+    @apply border-none
+}
+
+.ReactFlagsSelect-module_selectValue__152eS{
+    @apply p-0
+}
+
+.ReactFlagsSelect-module_selectFlag__2q5gC{
+    @apply text-[1.3em]
+}

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import Account from '../models/admin/auth/accounts.model.js';
+import Account from '../models/accounts.model.js';
 import { ErrorResponse } from '../utils/error_response.utils.js';
 
 export const protectMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -20,7 +20,7 @@ export const protectMiddleware = async (req: Request, res: Response, next: NextF
         const account = await Account.findById(decoded.id);
 
         if (!account) {
-            return next(new ErrorResponse(404, 'No uses found with this id'));
+            return next(new ErrorResponse(404, 'No user found with this id'));
         }
 
         req.account = account;

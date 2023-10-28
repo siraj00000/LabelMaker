@@ -1,0 +1,2 @@
+const CategoryHeader = [''];
+export { CategoryHeader };
