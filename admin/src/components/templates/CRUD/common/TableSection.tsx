@@ -14,11 +14,12 @@ type TableSectionProps = {
   selectedIds: string[];
   updateStatus: (id: string) => void;
   editActionComponent: React.ReactNode;
+  itemViewComponent?: React.ReactNode;
   deleteRecord: (id: string) => void;
   screenWidth?: string
 };
 
-const TableSection: React.FC<TableSectionProps> = ({ data, columns, updateSelection, selectedIds, updateStatus, editActionComponent, deleteRecord, screenWidth }) => {
+const TableSection: React.FC<TableSectionProps> = ({ data, columns, updateSelection, selectedIds, updateStatus, editActionComponent, itemViewComponent, deleteRecord, screenWidth }) => {
   return (
     <section className="border border-secondaryLightGray rounded-md overflow-hidden">
       <DataTable
@@ -28,6 +29,7 @@ const TableSection: React.FC<TableSectionProps> = ({ data, columns, updateSelect
         selectedIds={selectedIds}
         updateStatus={updateStatus}
         editActionComponent={editActionComponent}
+        itemViewComponent={itemViewComponent}
         deleteRecord={deleteRecord}
         screenWidth={screenWidth}
       />

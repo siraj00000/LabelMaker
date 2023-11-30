@@ -205,7 +205,12 @@ const LabelEditForm = ({ closeDrawer, item }: any) => {
                     <HorizontalDropdownSelect
                         setKeyName="variant"
                         title="Variant"
-                        options={products.flatMap((product) => Object.keys(product.feature).map((key) => ({ name: String(key) })))}
+                        options={products.flatMap((product) => {
+                            if (product._id === formik.values.product_id) {
+                                return product.variants.map((variant: string) => ({ name: variant }));
+                            }
+                            return []; // Return an empty array if the condition is not met
+                        })}
                         updateOption={formik.setFieldValue}
                     />}
 

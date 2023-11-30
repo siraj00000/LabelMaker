@@ -69,6 +69,7 @@ export const handleFetchAction = ({ url, data }: HandleFetchActionProps) => {
     }
   });
 };
+
 export const handleUpdateAction = ({ url, data, type = "application/json" }: HandleInsertActionProps) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -88,6 +89,7 @@ export const handleUpdateAction = ({ url, data, type = "application/json" }: Han
     }
   });
 };
+
 export const handleDeleteAction = ({ url, data, type = "application/json" }: HandleInsertActionProps) => {
   return new Promise(async (resolve, reject) => {
     try {

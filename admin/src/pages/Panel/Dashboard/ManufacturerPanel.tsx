@@ -17,10 +17,12 @@ import StatsFilter from '../../../components/modal/StatsFilter';
 const ManufacturerPanel = () => {
   const [data, setData] = useState<any>(null);
   const [isLoading, setLoading] = useState<boolean>(false);
+  console.log(data);
+  
   React.useEffect(() => {
     const fetchStats = async () => {
       setLoading(true)
-      const response = await DashboardLoaders.fetchLoaderData(DashboardServices.manufacturerStats({ date: '2023-10-27' }))
+      const response = await DashboardLoaders.fetchLoaderData(DashboardServices.manufacturerStats({ date: '2023-10-28' }))
       if (response?.data) {
         setData(response.data)
       } else {

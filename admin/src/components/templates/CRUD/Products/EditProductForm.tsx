@@ -64,7 +64,7 @@ const ProductEditForm = ({ closeDrawer, item }: any) => {
     sub_category_id: item.sub_category_id._id || "",
     status: item.status || "show",
     feature: item.feature || {},
-    videoURL: item.video_url.url || "",
+    video_url: item.video_url?.url || "",
     product_description: item.product_description || "",
     re_order_link: item.re_order_link || "",
     formType: 'edit',
@@ -301,27 +301,27 @@ const ProductEditForm = ({ closeDrawer, item }: any) => {
         <div className="h-5" />
 
         <HorizontalInputField
-          id="videoURL"
+          id="video_url"
           type="text"
           label={t('video-url')}
-          name={`videoURL`}
-          value={formik.values.videoURL}
+          name={`video_url`}
+          value={formik.values.video_url}
           onChange={formik.handleChange}
           placeholder={t("type-here")}
           errormessage={
-            formik.touched.videoURL
-              ? Array.isArray(formik.errors.videoURL)
-                ? formik.errors.videoURL.join(", ")
-                : typeof formik.errors.videoURL === "string"
-                  ? formik.errors.videoURL
+            formik.touched.video_url
+              ? Array.isArray(formik.errors.video_url)
+                ? formik.errors.video_url.join(", ")
+                : typeof formik.errors.video_url === "string"
+                  ? formik.errors.video_url
                   : ""
               : ""} />
 
-        {!formik.values.videoURL && <VideoUpload onVideoUpload={formik.setFieldValue} name='video' />}
+        {!formik.values.video_url && <VideoUpload onVideoUpload={formik.setFieldValue} name='video' />}
 
-        {formik.values.videoURL &&
+        {formik.values.video_url &&
           <iframe
-            src={formik.values.videoURL}
+            src={formik.values.video_url}
             title="Brand Video"
             width="100%"
             height="300" // You can adjust the height as needed

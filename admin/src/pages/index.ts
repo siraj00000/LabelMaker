@@ -17,5 +17,5 @@ export { default as Label, labelLoader, labelAction } from "./Panel/Producers/La
 export { default as Accessibility, accessibilityLoader, accessibilityAction } from "./Panel/Accessibility";
 
 export { default as ManufacturerPanel } from "./Panel/Dashboard/ManufacturerPanel";
-export { default as CompanyPanel } from "./Panel/Dashboard/ManufacturerPanel";
-export { default as SuperAdminPanel } from "./Panel/Dashboard/ManufacturerPanel";
+export { default as CompanyPanel } from "./Panel/Dashboard/CompanyPanel";
+export { default as SuperAdminPanel } from "./Panel/Dashboard/SuperAdminPanel";

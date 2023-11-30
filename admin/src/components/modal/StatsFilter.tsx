@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import useModal from "../../hooks/useModal";
 import CombineServices from "../../services/CombineService";
 import LabelServices from "../../services/LabelServices"
@@ -10,21 +10,20 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import { HorizontalInputField } from "../templates/Fields/HorizontalInputField";
 import { useTranslation } from "react-i18next";
-import HorizontalSingleSelect from "../templates/Fields/HorizontalSingleSelect";
-import HorizontalDropdownSelect from "../templates/Fields/Dropdown";
 import ButtonsWithIcon from "../templates/Button/ButtonWithIcon";
 import { TbFileTypeCsv } from "react-icons/tb";
-
+import HorizontalMultiSelect from "../templates/Fields/HorizontalMultiSelect";
+import HorizontalSingleSelectDropdown from "../templates/Fields/Dropdown";
 type StatsFilterModalProps = {
     buttonLayout: React.ReactNode;
     buttonTitle: string
 }
 
 type filterQueriesTypes = {
-    brand_id: string;
-    product_id: string;
+    brand_ids: string;
+    product_ids: string;
     batch_number: string;
-    variant: string;
+    variants: string;
     createdAt: string;
 }
 
@@ -49,7 +48,7 @@ const StatsFilter: React.FC<StatsFilterModalProps> = ({ buttonTitle, buttonLayou
     const fetchBrandProducts = async () => {
         if (products && products.length > 0) return;
         try {
-            const response = await CombineServices.fetchManufacturerBrandProducts(formik.values.brand_id) as ApiGetResponse
+            const response = await CombineServices.fetchManufacturerBrandsProducts({ brand_ids: formik.values.brand_ids }) as ApiGetResponse
             if (response.data) {
                 setProducts(response.data.data);
             }
@@ -58,10 +57,11 @@ const StatsFilter: React.FC<StatsFilterModalProps> = ({ buttonTitle, buttonLayou
         }
     }
 
-    const downloadCSV = async ({ brand_id, batch_number, product_id, variant, createdAt }: filterQueriesTypes) => {
+
+    const downloadCSV = async ({ brand_ids, batch_number, product_ids, variants, createdAt }: filterQueriesTypes) => {
         try {
-            const response: any = await LabelServices.downloadLabel(brand_id, product_id, variant, batch_number, createdAt)
-            
+            const response: any = await LabelServices.downloadLabel(brand_ids, product_ids, variants, batch_number, createdAt)
+
             if (response.data) {
                 window.open(`${process.env.REACT_APP_URL_FILES}/${response.data?.downloadURL}`, "_parent");
             }
@@ -71,13 +71,13 @@ const StatsFilter: React.FC<StatsFilterModalProps> = ({ buttonTitle, buttonLayou
     }
 
     let initialValues = {
-        brand_id: "", product_id: "", batch_number: "", createdAt: "", variant: ""
+        brand_ids: "", product_ids: "", batch_number: "", createdAt: "", variants: ""
     }
 
     const validationSchema = yup.object({
-        brand_id: yup.string().required('Brand is required'),
-        product_id: yup.string().required('Product is required'),
-        variant: yup.string(),
+        brand_ids: yup.string().required('Brand is required'),
+        product_ids: yup.string().required('Product is required'),
+        variants: yup.string(),
         batch_number: yup.string().required('Batch number is required'),
         createdAt: yup.date().required('Created date is required')
     });
@@ -94,10 +94,17 @@ const StatsFilter: React.FC<StatsFilterModalProps> = ({ buttonTitle, buttonLayou
         },
     });
 
+    useEffect(() => {
+        setProducts(null)
+
+        return () => { }
+    }, [formik.values.brand_ids])
+
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         formik.handleSubmit(e);
     }
+
     return (
         <Modal
             toggleBtn={
@@ -126,47 +133,61 @@ const StatsFilter: React.FC<StatsFilterModalProps> = ({ buttonTitle, buttonLayou
                 />
 
                 <div>
-                    <HorizontalSingleSelect
+                    <HorizontalMultiSelect
                         setFieldValue={formik.setFieldValue}
-                        name="brand_id"
+                        name="brand_ids"
                         data={brands}
                         fetchRelatedData={fetchBrands}
-                        placeholder='brand'
+                        placeholder={'brand'}
                         label='Brand'
-                        dataKey='name'
+                        dataKey="name"
+
                     />
                     <p className="mt-2 text-sm text-red-600 font-medium pl-1 text-right">
-                        {formik.touched.brand_id ? formik.errors.brand_id : ""}
+                        {formik.touched.brand_ids ? formik.errors.brand_ids : ""}
                     </p>
+
                 </div>
 
-                <div>
-                    <HorizontalSingleSelect
-                        setFieldValue={formik.setFieldValue}
-                        name="product_id"
-                        data={products || null}
-                        fetchRelatedData={fetchBrandProducts}
-                        placeholder='product'
-                        label='product'
-                        dataKey='name'
-                    />
-                    <p className="mt-2 text-sm text-red-600 font-medium pl-1 text-right">
-                        {formik.touched.product_id ? formik.errors.product_id : ""}
-                    </p>
-                </div>
+                {formik.values.brand_ids &&
+                    <div>
+                        <HorizontalMultiSelect
+                            setFieldValue={formik.setFieldValue}
+                            name="product_ids"
+                            data={products || null}
+                            fetchRelatedData={fetchBrandProducts}
+                            placeholder={'product'}
+                            label='Product'
+                            dataKey="name"
+                        />
+                        <p className="mt-2 text-sm text-red-600 font-medium pl-1 text-right">
+                            {formik.touched.product_ids ? formik.errors.product_ids : ""}
+                        </p>
+                    </div>
+                }
 
-                {formik.values.product_id && products && products.length > 0 &&
-                    <HorizontalDropdownSelect
+                {formik.values.product_ids && products && products.length > 0 &&
+                    <HorizontalSingleSelectDropdown
                         setKeyName="variant"
                         title="Variant"
                         options={products.flatMap((product) => {
-                            if (product._id === formik.values.product_id) {
-                                return Object.keys(product.feature).map((key) => ({ name: String(key) }));
+                            if (formik.values.product_ids.includes(product._id)) {
+                                // Create a Set to store unique keys
+                                const uniqueKeys = new Set<string>();
+                                // Iterate through product features and add unique keys to the Set
+                                Object.keys(product.feature).forEach((key) => {
+                                    uniqueKeys.add(String(key));
+                                });
+                                // Convert the Set back to an array and return as dropdown options
+                                return Array.from(uniqueKeys).map((key) => ({ name: key } as { name: string }));
                             }
                             return []; // Return an empty array if the condition is not met
                         })}
                         updateOption={formik.setFieldValue}
-                    />}
+                    />
+
+
+                }
 
                 <HorizontalInputField
                     id="createdAt"

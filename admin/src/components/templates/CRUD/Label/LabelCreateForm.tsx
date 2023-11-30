@@ -48,7 +48,7 @@ const LabelCreateForm = ({ closeDrawer }: any) => {
     let initialValues = {
         plant_name: "",
         batch_number: "",
-        serial_number: "",
+        number_of_serials: "",
         status: "show", // Default status
         formType: "add",
         brand_id: "",
@@ -61,7 +61,7 @@ const LabelCreateForm = ({ closeDrawer }: any) => {
     const validationSchema = yup.object({
         plant_name: yup.string(),
         batch_number: yup.string().required('Batch number is required'),
-        serial_number: yup.number().required('serial number is required'),
+        number_of_serials: yup.number().required('serial number is required'),
         status: yup.string().oneOf(["show", "hide"]).required("Status is required"),
         formType: yup.string(),
     });
@@ -72,7 +72,7 @@ const LabelCreateForm = ({ closeDrawer }: any) => {
         validationSchema,
         onSubmit: async (values) => {
             console.log(values);
-
+            
             // Submit the FormData
             submit(values, { method: "POST", action: "/label" });
         },
@@ -120,14 +120,14 @@ const LabelCreateForm = ({ closeDrawer }: any) => {
                 />
 
                 <HorizontalInputField
-                    id="serial_number"
+                    id="number_of_serials"
                     type="number"
-                    label={t('serial_number')}
-                    name={`serial_number`}
-                    value={formik.values.serial_number}
+                    label={'Number Of Serials'}
+                    name={`number_of_serials`}
+                    value={formik.values.number_of_serials}
                     onChange={formik.handleChange}
-                    placeholder={t("serial-number-placeholder")}
-                    errormessage={formik.touched.serial_number ? formik.errors.serial_number : ""}
+                    placeholder={"3, 4, 5..."}
+                    errormessage={formik.touched.number_of_serials ? formik.errors.number_of_serials : ""}
                 />
 
                 <HorizontalInputField
@@ -188,9 +188,9 @@ const LabelCreateForm = ({ closeDrawer }: any) => {
                     <HorizontalDropdownSelect
                         setKeyName="variant"
                         title="Variant"
-                        options={products.flatMap((product) => {
+                        options={products.flatMap((product) => {    
                             if (product._id === formik.values.product_id) {
-                                return Object.keys(product.feature).map((key) => ({ name: String(key) }));
+                                return product.variants.map((variant: string) => ({ name: variant }));
                             }
                             return []; // Return an empty array if the condition is not met
                         })}

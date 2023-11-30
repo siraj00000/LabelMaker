@@ -35,9 +35,11 @@ export default function HorizontalMultiSelect({ id, data, dataKey, label, name, 
           (selectedItem) => selectedItem[dataKey] !== item[dataKey]
         )
       );
-      setFieldValue(name, selectedItems.filter(
-        (selectedItem) => selectedItem._id !== item._id
-      ))
+
+      setFieldValue(name, selectedItems
+        .filter((selectedItem) => selectedItem._id !== item._id)
+        .map(selectedItems => selectedItems._id));
+
     } else {
       setSelectedItems([...selectedItems, item]);
       setFieldValue(name, [...selectedItems.map(i => i._id), item._id]);
@@ -57,7 +59,7 @@ export default function HorizontalMultiSelect({ id, data, dataKey, label, name, 
           <Listbox.Button onClick={fetchRelatedData} className="relative w-full border border-secondaryLightGray rounded-md py-[10px] px-[14px] outline-none">
             {selectedItems.length === 0 ?
               <span className="block truncate text-left text-sm text-gray-400 capitalize">{t(`${placeholder}`)}</span>
-              : <div className="flex items-center gap-2 my-2">
+              : <div className="flex items-center flex-wrap gap-2 my-2">
                 {selectedItems.map((selectedItem) => (
                   <div key={selectedItem[dataKey]} className="flex justify-between cursor-pointer">
                     <span

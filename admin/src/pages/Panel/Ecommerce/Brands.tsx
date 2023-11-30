@@ -6,6 +6,7 @@ import CommonLayout from "../../../components/templates/CRUD/common";
 import BrandCreateForm from "../../../components/templates/CRUD/Brands/BrandCreateForm";
 import BrandEditForm from "../../../components/templates/CRUD/Brands/BrandEditForm";
 import BrandServices from "../../../services/BrandServices";
+import DetailBrand from "../../../components/templates/CRUD/Brands/DetailBrand";
 
 const {
     createBrands,
@@ -39,6 +40,7 @@ const Brands = () => {
             title={'brand'}
             addActionComponent={<BrandCreateForm />}
             editActionComponent={<BrandEditForm />}
+            itemViewComponent={<DetailBrand />}
             updateStatus={toggleCategoryStatus}
             deleteRecord={deleteRecordHandler}
             deleteMultipleRecordHandler={deleteMultipleRecordHandler}

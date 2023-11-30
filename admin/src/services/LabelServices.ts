@@ -10,7 +10,7 @@ const LabelServices = {
         handleFetchAction({ url: `/label/getById/${id}` }),
 
     downloadLabel: (brand_id: string, product_id: string, variant: string, batch_number: string, createAt: string) =>
-        handleFetchAction({ url: `/label/download-csv?brand_id=${brand_id}&product_id=${product_id}&variant=${variant}&batch_number=${batch_number}&createAt=${createAt}` }),
+        handleFetchAction({ url: `/label/download-csv?brand_id=${brand_id}&product_id=${product_id}&variant=${variant}&batch_number=${batch_number}&createdAt=${createAt}` }),
 
     createLabel: (body: any) =>
         handleInsertAction({ url: `/label/create`, data: body }),

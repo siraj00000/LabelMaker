@@ -48,6 +48,13 @@ class ProductController {
                         publicId: videoResult.public_id
                     };
                 }
+            } else {
+                if (req.body.video_url) {
+                    productInfo.video_url = {
+                        url: req.body.video_url,
+                        publicId: ""
+                    }
+                }
             }
             // Create the product with the provided information (including images and video)
             await Product.create(productInfo);
@@ -187,6 +194,13 @@ class ProductController {
                     // Set the new video URL in productInfo
                     productInfo.video_url = { url: videoResult.secure_url, publicId: videoResult.public_id };
                     productInfo['video_url'] = null
+                }
+            } else {
+                if (req.body.video_url) {
+                    productInfo.video_url = {
+                        url: req.body.video_url,
+                        publicId: ""
+                    }
                 }
             }
 

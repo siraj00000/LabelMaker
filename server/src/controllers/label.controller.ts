@@ -24,7 +24,8 @@ class LabelController {
             req.body['user_id'] = req.account?._id;
 
             // Extract data from the request body
-            const { brand_id, product_id, batch_number, serial_number } = req.body;
+            const { brand_id, product_id, batch_number, number_of_serials } = req.body;
+            
             // Find the brand based on brand_id
             const brand = await Brand.findById(brand_id);
             // If the brand is not found, throw an error
@@ -37,10 +38,11 @@ class LabelController {
             req.body['manufacture_id'] = req.account?.associatedId;
 
             // Iterate through serial numbers and create labels
-            for (let index = 1; index <= serial_number; index++) {
+            for (let index = 1; index <= number_of_serials; index++) {
                 // Generate DS1 and DS2 URLs
                 req.body['DS1'] = generateURL('DS1', brandName, product_id, batch_number, Number(index));
                 req.body['DS2'] = generateURL('DS2', brandName, product_id, batch_number, Number(index));
+                req.body['serial_number'] = index;
                 // Create a label with the generated data
                 await Label.create(req.body);
             }
@@ -312,27 +314,33 @@ class LabelController {
     public async downloadCSV(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             // Extract filter parameters from the request query
-            const { brand_id, product_id, variant, createdAt } = req.query;
+            const { brand_id, product_id, variant, batch_number, createdAt } = req.query as any;
 
-            // Build the filter object based on provided parameters
-            const filter: Record<string, any> = {};
-            if (brand_id) {
-                filter.brand_id = brand_id;
-            }
-            if (product_id) {
-                filter.product_id = product_id;
-            }
-            if (variant) {
-                filter.variant = variant;
-            }
+            // Create a filter object to find labels for a specific date
+            const filter: Record<string, any> = {
+                user_id: req.account?._id,
+                brand_id,
+                product_id,
+                variant,
+                batch_number
+            };
+
             if (createdAt) {
-                // Assuming createdAt is a date field, directly use the provided date string for filtering
-                filter.createdAt = createdAt;
+                // Assuming createdAt is a string in ISO format for the specific date
+                const startDate = new Date(createdAt); // Get the start of the day
+                startDate.setUTCHours(0, 0, 0, 0); // Set time to 00:00:00
+
+                const endDate = new Date(createdAt); // Get the end of the day
+                endDate.setUTCHours(23, 59, 59, 999); // Set time to 23:59:59
+
+                filter.createdAt = {
+                    $gte: startDate,
+                    $lte: endDate
+                };
             }
 
             // Query the database with the provided filter
             const labels: ILabel[] = await Label.find(filter)
-                .where({ user_id: req.account?._id })
                 .populate({
                     path: 'manufacture_id', select: 'name', model: 'Manufacturer'
                 }) // Populate 'name' field from manufacture_id
@@ -344,7 +352,8 @@ class LabelController {
                 });;
 
             if (labels?.length === 0) {
-                res.status(200).json({ success: false });
+                res.status(400).json({ success: false, message: "No Label Found!" });
+                return
             }
 
             const csvStream = csv.format({ headers: true });
@@ -402,9 +411,9 @@ class LabelController {
  * @param {number} index - The index for generating a unique URL.
  * @returns {string} - The generated URL.
  */
-const generateURL = (urlType: string, brandName: string, product_id: string, batch_number: string, index: number) => {
+const generateURL = (urlType: string, brandName: string, product_id: string, batch_number: string, index: number): string => {
     // Construct the URL based on the parameters
-    let url = `${urlType}/${brandName}_${product_id}_${batch_number}_${index}`;
+    let url = `${urlType}/${brandName.split(" ").join("_")}_${product_id}_${batch_number}_${index}`;
     return url;
 }
 

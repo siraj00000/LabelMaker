@@ -1,6 +1,7 @@
 import React from "react";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { BiEdit } from "react-icons/bi";
+import { AiOutlineEye } from "react-icons/ai";
 import Cookies from "js-cookie";
 import ToggleSwitch from "../../switch/Switch";
 import Checkbox from "../Fields/Checkbox";
@@ -9,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import useDrawer from "../../../hooks/useDrawer";
 import useModal from "../../../hooks/useModal";
 import DeleteModal from "../../modal/DeleteModal";
+import ItemViewModal from "../../modal/ItemViewModal";
 
 interface DynamicTableProps {
   data: any[]; // Replace 'any[]' with the actual type of your data
@@ -18,6 +20,7 @@ interface DynamicTableProps {
   selectedIds: string[];
   updateStatus: (id: string) => void;
   editActionComponent: React.ReactNode;
+  itemViewComponent?: React.ReactNode;
   deleteRecord: (id: string) => void;
 }
 
@@ -25,7 +28,7 @@ interface ColumnComponentMap {
   [key: string]: React.FC<{ item: any }>; // Explicitly type components with React.FC
 }
 
-const DataTable: React.FC<DynamicTableProps> = ({ data, columns, updateSelection, selectedIds, updateStatus, editActionComponent, deleteRecord, screenWidth }) => {
+const DataTable: React.FC<DynamicTableProps> = ({ data, columns, updateSelection, selectedIds, updateStatus, editActionComponent, itemViewComponent, deleteRecord, screenWidth }) => {
   const { t } = useTranslation();
   const { drawerType, closeDrawer, toggleDrawer } = useDrawer();
   const { handleOpenModal } = useModal();
@@ -146,7 +149,17 @@ const DataTable: React.FC<DynamicTableProps> = ({ data, columns, updateSelection
                 </td>
               ))}
 
-              <td className="flex items-center justify-end gap-2 px-2 h-16" colSpan={1}>
+              <td className="flex items-center justify-end space-x-1 px-2 h-16" colSpan={1}>
+                {itemViewComponent && <ItemViewModal
+                  viewButtonTitle="show"
+                  buttonLayout={
+                    <button onClick={() => handleOpenModal("show")}>
+                      <AiOutlineEye size={20} className="text-primaryGreen hover:scale-110 p-0" />
+                    </button>
+                  }
+                  contentLayout={React.cloneElement(itemViewComponent as React.ReactElement, { item, closeDrawer })}
+                />}
+
                 <CommonDrawer
                   toggleButton={
                     <BiEdit

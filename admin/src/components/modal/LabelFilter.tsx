@@ -14,6 +14,7 @@ import HorizontalSingleSelect from "../templates/Fields/HorizontalSingleSelect";
 import HorizontalDropdownSelect from "../templates/Fields/Dropdown";
 import ButtonsWithIcon from "../templates/Button/ButtonWithIcon";
 import { TbFileTypeCsv } from "react-icons/tb";
+import CustomSingleSelect from "../templates/Fields/CustomSingleSelect";
 
 type LabelFilterModalProps = {
     buttonLayout: React.ReactNode;
@@ -33,6 +34,7 @@ const LabelFilter: React.FC<LabelFilterModalProps> = ({ buttonTitle, buttonLayou
     const { t } = useTranslation();
     const [brands, setBrands] = useState<Array<ListData> | null>(null);
     const [products, setProducts] = useState<Array<any> | null>(null);
+    const [batchNumbers, setBatchNumbers] = useState<Array<any> | null>(null);
 
     const fetchBrands = async () => {
         if (brands && brands.length > 0) return;
@@ -58,15 +60,32 @@ const LabelFilter: React.FC<LabelFilterModalProps> = ({ buttonTitle, buttonLayou
         }
     }
 
+    const fetchBatchNumbers = async () => {
+        if (batchNumbers && batchNumbers.length > 0) return;
+        try {
+            const response = await CombineServices.fetchBatchNumber(formik.values.brand_id, formik.values.product_id, formik.values.variant) as ApiGetResponse
+            if (response.data) {
+                setBatchNumbers(response.data.data);
+            }
+        } catch (error) {
+            notifyError('Failed to fetch');
+        }
+    }
+
     const downloadCSV = async ({ brand_id, batch_number, product_id, variant, createdAt }: filterQueriesTypes) => {
         try {
             const response: any = await LabelServices.downloadLabel(brand_id, product_id, variant, batch_number, createdAt)
-            
-            if (response.data) {
+
+            if (response.data.success) {
                 window.open(`${process.env.REACT_APP_URL_FILES}/${response.data?.downloadURL}`, "_parent");
             }
         } catch (error: any) {
-            notifyError(error)
+            let errorData = error.response.data;
+            if (errorData) {
+                if (!errorData.success) {
+                    notifyError(errorData.message)
+                }
+            }
         }
     }
 
@@ -114,17 +133,6 @@ const LabelFilter: React.FC<LabelFilterModalProps> = ({ buttonTitle, buttonLayou
                     Label Filteration
                 </h1>
 
-                <HorizontalInputField
-                    id="batch_number"
-                    type="text"
-                    label={t('batch_number')}
-                    name={`batch_number`}
-                    value={formik.values.batch_number}
-                    onChange={formik.handleChange}
-                    placeholder={t("batch-number-placeholder")}
-                    errormessage={formik.touched.batch_number ? formik.errors.batch_number : ""}
-                />
-
                 <div>
                     <HorizontalSingleSelect
                         setFieldValue={formik.setFieldValue}
@@ -161,12 +169,31 @@ const LabelFilter: React.FC<LabelFilterModalProps> = ({ buttonTitle, buttonLayou
                         title="Variant"
                         options={products.flatMap((product) => {
                             if (product._id === formik.values.product_id) {
-                                return Object.keys(product.feature).map((key) => ({ name: String(key) }));
+                                return product.variants.map((variant: string) => ({ name: variant }));
                             }
                             return []; // Return an empty array if the condition is not met
                         })}
                         updateOption={formik.setFieldValue}
-                    />}
+                    />
+                }
+
+                {formik.values.variant &&
+                    <div>
+                        <CustomSingleSelect
+                            setFieldValue={formik.setFieldValue}
+                            name="batch_number"
+                            data={batchNumbers || null}
+                            fetchRelatedData={fetchBatchNumbers}
+                            placeholder='ABC-XYZ-1'
+                            label='Batch Number'
+                            dataKey='batch_number'
+                            selectKey="batch_number"
+                        />
+                        <p className="mt-2 text-sm text-red-600 font-medium pl-1 text-right">
+                            {formik.touched.batch_number ? formik.errors.batch_number : ""}
+                        </p>
+                    </div>
+                }
 
                 <HorizontalInputField
                     id="createdAt"

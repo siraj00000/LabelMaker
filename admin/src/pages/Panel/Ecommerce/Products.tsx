@@ -7,6 +7,7 @@ import ProductServices from "../../../services/ProductServices";
 import CommonLayout from "../../../components/templates/CRUD/common";
 import ProductCreateForm from "../../../components/templates/CRUD/Products/CreateProductForm";
 import ProductEditForm from "../../../components/templates/CRUD/Products/EditProductForm";
+import ProductDetail from "../../../components/templates/CRUD/Products/DetailProduct";
 
 const {
   fetchAllData,
@@ -41,6 +42,7 @@ const Products = () => {
       title={'product'}
       addActionComponent={<ProductCreateForm />}
       editActionComponent={<ProductEditForm />}
+      itemViewComponent={<ProductDetail />}
       updateStatus={toggleCategoryStatus}
       deleteRecord={deleteRecordHandler}
       deleteMultipleRecordHandler={deleteMultipleRecordHandler}

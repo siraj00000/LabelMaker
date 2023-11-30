@@ -86,7 +86,35 @@ class CombineController {
                     $project: {
                         _id: 1,
                         name: 1,
-                        feature: 1
+                        feature: 1,
+                        variants: 1
+                    }
+                }
+            ]);
+            res.status(200).json({ success: true, data: activeProducts });
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async fetchMultiManufacturerBrandProducts(req, res, next) {
+        try {
+            const brandIds = req.body.brand_ids; // Assuming brand_ids is an array of strings in req.body
+            const activeProducts = await Product.aggregate([
+                {
+                    $match: {
+                        status: 'show',
+                        brand_id: {
+                            $in: brandIds.map((brandId) => new mongoose.Types.ObjectId(brandId))
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        name: 1,
+                        feature: 1,
+                        variants: 1
                     }
                 }
             ]);
@@ -158,34 +186,50 @@ class CombineController {
                 select: 'name',
                 model: 'Account'
             });
+            // Aggregate labels based on unique user_ids and count the labels for each user.
+            const userLabelCounts = new Map();
             // Group labels by month and calculate the count for each month
             const monthLabelCounts = {};
+            // Initialize monthLabelCounts with all months having a count of 0
+            const currentDate = new Date(endDate);
+            while (currentDate <= startDate) {
+                const monthName = currentDate.toLocaleString('en-us', { month: 'short' });
+                monthLabelCounts[monthName] = 0;
+                // Move to the next month
+                currentDate.setMonth(currentDate.getMonth() + 1);
+            }
+            const getObjectValue = (obj, key) => {
+                return obj[key];
+            };
             labels.forEach(label => {
                 const monthYear = label.createdAt.toISOString().slice(0, 7); // Extracts YYYY-MM format from label's creation date
                 const monthName = new Date(monthYear + "-01").toLocaleString('en-us', { month: 'short' }); // Converts YYYY-MM to month abbreviation
                 monthLabelCounts[monthName] = (monthLabelCounts[monthName] || 0) + 1;
-            });
-            const getObjectValue = (obj, key) => {
-                return obj[key];
-            };
-            // Aggregate labels based on unique user_ids and count the labels for each user.
-            const userLabelCounts = {};
-            labels.forEach(label => {
                 const userName = getObjectValue(label.user_id, 'name');
-                let count = (userLabelCounts[userName]?.count || 0) + 1;
-                userLabelCounts[userName] = {
-                    name: userName,
-                    count,
-                    progress: Math.round(count / labels.length * 100)
-                };
+                const userLabel = userLabelCounts.get(userName) || { name: userName, count: 0, progress: 0 };
+                userLabel.count += 1;
+                userLabel.progress = Math.round((userLabel.count / labels.length) * 100);
+                userLabelCounts.set(userName, userLabel);
             });
+            const [brandsCount, productsCount, adminCount, labelCount] = await Promise.all([
+                Brand.find({ company_id: company_id }).count(),
+                Product.find({ company_id: company_id }).count(),
+                Account.find({ associatedId: company_id }).count(),
+                Label.find({ manufacture_id: { $in: manufacturerIds } }).count()
+            ]);
             // Send the response with the calculated data
             res.status(200).json({
                 success: true,
                 data: {
-                    userLabelCounts,
+                    userLabelCounts: Array.from(userLabelCounts.values()),
                     totalLabelsCount: labels.length,
-                    monthLabelCounts
+                    monthLabelCounts,
+                    stats: {
+                        brandsCount,
+                        productsCount,
+                        adminCount,
+                        labelCount
+                    }
                 },
             });
         }
@@ -227,34 +271,50 @@ class CombineController {
                 select: 'name',
                 model: 'Account'
             });
+            const getObjectValue = (obj, key) => {
+                return obj[key];
+            };
             // Group labels by month and calculate the count for each month
             const monthLabelCounts = {};
+            // Aggregate labels based on unique user_ids and count the labels for each user.
+            const userLabelCounts = new Map();
+            // Initialize monthLabelCounts with all months having a count of 0
+            const currentDate = new Date(endDate);
+            while (currentDate <= startDate) {
+                const monthName = currentDate.toLocaleString('en-us', { month: 'short' });
+                monthLabelCounts[monthName] = 0;
+                // Move to the next month
+                currentDate.setMonth(currentDate.getMonth() + 1);
+            }
             labels.forEach(label => {
                 const monthYear = label.createdAt.toISOString().slice(0, 7); // Extracts YYYY-MM format from label's creation date
                 const monthName = new Date(monthYear + "-01").toLocaleString('en-us', { month: 'short' }); // Converts YYYY-MM to month abbreviation
                 monthLabelCounts[monthName] = (monthLabelCounts[monthName] || 0) + 1;
-            });
-            const getObjectValue = (obj, key) => {
-                return obj[key];
-            };
-            // Aggregate labels based on unique user_ids and count the labels for each user.
-            const userLabelCounts = {};
-            labels.forEach(label => {
                 const userName = getObjectValue(label.user_id, 'name');
-                let count = (userLabelCounts[userName]?.count || 0) + 1;
-                userLabelCounts[userName] = {
-                    name: userName,
-                    count,
-                    progress: Math.round(count / labels.length * 100)
-                };
+                const userLabel = userLabelCounts.get(userName) || { name: userName, count: 0, progress: 0 };
+                userLabel.count += 1;
+                userLabel.progress = Math.round((userLabel.count / labels.length) * 100);
+                userLabelCounts.set(userName, userLabel);
             });
+            const [brandsCount, productsCount, adminCount, labelCount] = await Promise.all([
+                Brand.find({ company_id: req.account?.associatedId }).count(),
+                Product.find({ company_id: req.account?.associatedId }).count(),
+                Account.find({ associatedId: req.account?.associatedId }).count(),
+                Label.find({ manufacture_id: { $in: manufacturerIds } }).count()
+            ]);
             // Send the response with the calculated data
             res.status(200).json({
                 success: true,
                 data: {
-                    userLabelCounts,
+                    userLabelCounts: Array.from(userLabelCounts.values()),
                     totalLabelsCount: labels.length,
-                    monthLabelCounts
+                    monthLabelCounts,
+                    stats: {
+                        brandsCount,
+                        productsCount,
+                        adminCount,
+                        labelCount
+                    }
                 },
             });
         }
@@ -414,6 +474,39 @@ class CombineController {
                         labelCount
                     }
                 },
+            });
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async getBatchNumbersAndVariants(req, res, next) {
+        try {
+            const { product_ids } = req.body;
+            if (!Array.isArray(product_ids)) {
+                throw new ErrorResponse(400, 'Invalid input format');
+            }
+            const filter = {};
+            if (product_ids.length > 0) {
+                filter.product_id = { $in: product_ids };
+            }
+            const labels = await Label.find(filter).select('variant');
+            res.status(200).json({
+                success: true,
+                data: labels
+            });
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async labelBatchNumbers(req, res, next) {
+        try {
+            const { brand_id, product_id, variant } = req.body;
+            const labels = await Label.find({ brand_id, product_id, variant }).select('batch_number');
+            res.status(200).json({
+                success: true,
+                data: labels
             });
         }
         catch (error) {

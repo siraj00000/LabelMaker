@@ -44,6 +44,14 @@ class ProductController {
                     };
                 }
             }
+            else {
+                if (req.body.video_url) {
+                    productInfo.video_url = {
+                        url: req.body.video_url,
+                        publicId: ""
+                    };
+                }
+            }
             // Create the product with the provided information (including images and video)
             await Product.create(productInfo);
             res.status(201).json({ success: true, message: 'Product created successfully.' });
@@ -161,6 +169,14 @@ class ProductController {
                     // Set the new video URL in productInfo
                     productInfo.video_url = { url: videoResult.secure_url, publicId: videoResult.public_id };
                     productInfo['video_url'] = null;
+                }
+            }
+            else {
+                if (req.body.video_url) {
+                    productInfo.video_url = {
+                        url: req.body.video_url,
+                        publicId: ""
+                    };
                 }
             }
             // Handle image uploads and updates

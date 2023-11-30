@@ -8,7 +8,7 @@ export const sidebarMenuData: Menu = {
   home: [
     {
       title: "eCommerce",
-      path: "/dashboard",
+      path: "/",
       Icon: BsCart3,
       hasSubMenu: false,
       role: ['Company Admin', 'Manufacturer Admin', 'Super Admin']
@@ -83,22 +83,8 @@ export const sidebarMenuData: Menu = {
       ],
     },
     {
-      title: "Accessibility",
-      path: "",
-      Icon: MdOutlineManageAccounts,
-      hasSubMenu: true,
-      role: ['Super Admin'],
-      subMenus: [
-        {
-          title: "Role & Permission",
-          path: "accessibility",
-          role: "Super Admin"
-        },
-      ],
-    },
-    {
-      title: "Online Store",
-      path: "http://localhost:4000/",
+      title: "Label Makers Info",
+      path: "http://localhost:4001/",
       Icon: TbShoppingBag,
       hasSubMenu: false,
       role: ['Company Admin', 'Manufacturer Admin', 'Super Admin'],

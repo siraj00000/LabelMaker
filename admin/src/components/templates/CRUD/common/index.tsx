@@ -10,6 +10,7 @@ type CommonLayoutProps = {
   columns: string[];
   addActionComponent: React.ReactNode;
   editActionComponent: React.ReactNode;
+  itemViewComponent?: React.ReactNode;
   bulkActionComponent?: React.ReactNode;
   updateStatus: (id: string) => void;
   deleteRecord: (id: string) => void;
@@ -23,6 +24,7 @@ const CommonLayout: React.FC<CommonLayoutProps> = ({
   addActionComponent,
   editActionComponent,
   bulkActionComponent,
+  itemViewComponent,
   updateStatus,
   deleteRecord,
   deleteMultipleRecordHandler,
@@ -51,6 +53,7 @@ const CommonLayout: React.FC<CommonLayoutProps> = ({
         selectedIds={selectedIds}
         updateStatus={updateStatus}
         editActionComponent={editActionComponent}
+        itemViewComponent={itemViewComponent}
         deleteRecord={deleteRecord}
         screenWidth={screenWidth}
       />

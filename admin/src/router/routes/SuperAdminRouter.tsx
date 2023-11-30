@@ -1,9 +1,9 @@
 import { Route } from "react-router-dom"
-import { Categories, categoryAction, categoryLoader, SubCategory, subCategoryLoader, subCategoryAction, Staff, staffLoader, staffAction, companyLoader, companyAction, manufacturerLoader, manufacturerAction, Companies, Manufacturers, brandsLoader, brandsAction, Brands, Accessibility, accessibilityLoader, accessibilityAction, ManufacturerPanel } from "../../pages";
+import { Categories, categoryAction, categoryLoader, SubCategory, subCategoryLoader, subCategoryAction, Staff, staffLoader, staffAction, companyLoader, companyAction, manufacturerLoader, manufacturerAction, Companies, Manufacturers, brandsLoader, brandsAction, Brands, Accessibility, accessibilityLoader, accessibilityAction, SuperAdminPanel } from "../../pages";
 
 const SuperAdminRoutes = (
     <>
-        <Route index element={<ManufacturerPanel />} />
+        <Route index element={<SuperAdminPanel />} />
 
         {/* Ecommerce */}
         <Route path="brands" element={<Brands />} loader={brandsLoader} action={brandsAction} />

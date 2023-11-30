@@ -10,6 +10,14 @@ const BRAND_CHECK_LIST = [
     {
         checkName: 'request_help',
         isCheck: false,
+        inputName: '',
+        inputType: '',
+        id: '',
+        relationship: false
+    },
+    {
+        checkName: 'survey_link',
+        isCheck: false,
         inputName: 'survey_link',
         inputType: 'text',
         id: 'survey_link_id',

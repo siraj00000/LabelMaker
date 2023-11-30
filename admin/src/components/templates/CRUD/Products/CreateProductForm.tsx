@@ -60,7 +60,7 @@ const ProductCreateForm = ({ closeDrawer }: any) => {
     sub_category_id: "",
     status: "show",
     feature: {},
-    videoURL: "",
+    video_url: "",
     product_description: "",
     re_order_link: "",
     formType: 'add'
@@ -267,21 +267,21 @@ const ProductCreateForm = ({ closeDrawer }: any) => {
         <div className="h-5" />
 
         <HorizontalInputField
-          id="videoURL"
+          id="video_url"
           type="text"
           label={t('video-url')}
-          name={`videoURL`}
-          value={formik.values.videoURL}
+          name={`video_url`}
+          value={formik.values.video_url}
           onChange={formik.handleChange}
           placeholder={t("type-here")}
-          errormessage={formik.touched.videoURL ? formik.errors.videoURL : ""}
+          errormessage={formik.touched.video_url ? formik.errors.video_url : ""}
         />
 
-        {!formik.values.videoURL && <VideoUpload onVideoUpload={formik.setFieldValue} name='video' />}
+        {!formik.values.video_url && <VideoUpload onVideoUpload={formik.setFieldValue} name='video' />}
 
-        {formik.values.videoURL &&
+        {formik.values.video_url &&
           <iframe
-            src={formik.values.videoURL}
+            src={formik.values.video_url}
             title="Brand Video"
             width="100%"
             height="300" // You can adjust the height as needed

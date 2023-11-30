@@ -12,8 +12,10 @@ combineRouter
     .get('/fetch-company-subcategories', protectMiddleware, authCompanyAdmin, combineController.fetchCompanySubcategories)
     .get('/fetch-manufacturers-company-brands', protectMiddleware, authManufacturerAdmin, combineController.fetchManufacturerBrands)
     .get('/fetch-brand-products/:brand_id', protectMiddleware, authManufacturerAdmin, combineController.fetchManufacturerBrandProducts)
+    .post('/fetch-brands-products', protectMiddleware, authManufacturerAdmin, combineController.fetchMultiManufacturerBrandProducts)
     .get('/super-admin-label-stats', protectMiddleware, authAdmin, combineController.superAdminLabelStats)
     .get('/company-label-stats', protectMiddleware, authCompanyAdmin, combineController.companyLabelStats)
     .post('/manufacturer-label-stats', protectMiddleware, authManufacturerAdmin, combineController.manufacturerLabelStats)
-
+    .post('/label-batchs-and-variants', protectMiddleware, authManufacturerAdmin, combineController.getBatchNumbersAndVariants)
+    .post('/label-batch-numbers', protectMiddleware, authManufacturerAdmin, combineController.labelBatchNumbers);
 export default combineRouter
